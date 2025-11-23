@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Xternal Executor</title>
+    <style>
+        html, body {
+            height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden;
+            background: #000000;
+        }
+        #container { width: 100%; height: 100%; }
+        .monaco-editor, .monaco-editor-background, .monaco-editor .overflow-guard {
+            background-color: #000000 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script src="vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'vs' } });
+        require(["vs/editor/editor.main"], function () {
+
+            monaco.editor.defineTheme('xternal-cold', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'keyword.lua', foreground: 'CCCCCC', fontStyle: 'bold' },
+                    { token: 'string.lua', foreground: '999999' },
+                    { token: 'number.lua', foreground: 'BBBBBB' },
+                    { token: 'comment.lua', foreground: '555555', fontStyle: 'italic' },
+
+                    // ROBLOX & CHEAT HIGHLIGHTING (ONLY WHITE / BOLD / ITALIC)
+                    { token: 'roblox.service', foreground: 'FFFFFF', fontStyle: 'bold' },
+                    { token: 'roblox.global', foreground: 'DDDDDD' },
+                    { token: 'cheat.function', foreground: 'FFFFFF', fontStyle: 'bold italic' },
+                ],
+                colors: {
+                    'editor.background': '#000000',
+                    'editor.foreground': '#FFFFFF',
+                    'editorLineNumber.foreground': '#333333',
+                    'editorLineNumber.activeForeground': '#666666',
+                    'editor.selectionBackground': '#FFFFFF18',
+                    'editorCursor.foreground': '#FFFFFF',
+                    'editorGutter.background': '#000000',
+                }
+            });
+
+            monaco.editor.setTheme('xternal-cold');
+            monaco.languages.setMonarchTokensProvider('lua', {
+                tokenizer: {
+                    root: [
+                        [/game|workspace|Workspace|Players|ReplicatedStorage|ServerStorage|StarterGui|Lighting|RunService|TweenService|HttpService|MarketplaceService/, 'roblox.service'],
+
+                        [/print|warn|error|spawn|delay|wait|tick|typeof|pcall|xpcall|shared|_G|getgenv|setclipboard/, 'roblox.global'],
+                        [/fireclickdetector|fireproximityprompt|firetouchinterest|getgc|getrenv|getreg|hookfunction|hookmetamethod|newcclosure|checkcaller|setreadonly|isreadonly|getrawmetatable|setrawmetatable|getnamecallmethod|Drawing\.new|drawnew|decompile|identifyexecutor|setthreadidentity|getthreadidentity|islclosure|isexecutorclosure/, 'cheat.function'],
+                    ]
+                }
+            });
+
+            // CREATE EDITOR – CLEAN & MINIMAL
+            const editor = monaco.editor.create(document.getElementById('container'), {
+                value: `--[[ X T E R N A L ]]\n-- Game with the best experience.\n\nprint("Ready.")`,
+                language: 'lua',
+                theme: 'xternal-cold',
+                fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+                fontSize: 14,
+                fontLigatures: true,
+                smoothScrolling: true,
+                cursorSmoothCaretAnimation: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                wordWrap: 'on',
+                autoClosingBrackets: 'always',
+                autoClosingQuotes: 'always',
+                folding: true,
+                showFoldingControls: 'always',
+
+                quickSuggestions: false,
+                suggestOnTriggerCharacters: false,
+                acceptSuggestionOnCommitCharacter: false,
+                acceptSuggestionOnEnter: "off",
+                tabCompletion: "off",
+                suggest: { showIcons: false, showStatusBar: false }
+            });
+
+            window.getValue = () => editor.getValue();
+            window.setValue = (val) => editor.setValue(val);
+            window.clear = () => editor.setValue('');
+            window.focus = () => editor.focus();
+        });
+    </script>
+</body>
+</html>
